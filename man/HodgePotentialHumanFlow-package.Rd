@@ -6,7 +6,7 @@
 \alias{HodgePotentialHumanFlow-package}
 \title{Scalar potential of origin-destionation matrix by Hodge-Kodaira decompostion}
 \description{
-This package implements Hodge-Kodaira decomposition of origin-destination matrix: see Takaaki Aoki, Shota Fujishima and Naoya Fujiwara (2021).
+This package implements Hodge-Kodaira decomposition of origin-destination matrix
 }
 \author{
 \strong{Maintainer}: Takaaki Aoki \email{takaaki.aoki.work@gmail.com} (\href{https://orcid.org/0000-0002-3312-3061}{ORCID})
