@@ -12,7 +12,7 @@
 
 
 
-<title>Potential In London</title>
+<title>Potential of Human flow</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -336,7 +336,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<h1 class="title toc-ignore">Potential In London</h1>
+<h1 class="title toc-ignore">Potential of Human flow</h1>
 
 
 
@@ -344,13 +344,13 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div id="summary" class="section level1">
 <h1>Summary</h1>
 <p>This vignette shows the scalar potential of a commuting flow in
-London as a example.</p>
+London.</p>
 </div>
 <div id="dataset-origin-destination-matrix-in-london" class="section level1">
 <h1>Dataset: origin-destination matrix in London</h1>
 <p>We use a trip dataset from home to workplace in 2011 obtained from <a href="http://www.nomisweb.co.uk/census/2011/wu03EW">UK Data Service</a>.
 The OD matrix denotes the number of commuters aggregated by the middle
-layer super output area (MSOA) in the census 2011. The dataset covers
+layer super output area (MSOA) in the 2011 census. The dataset covers
 the MSOAs in England and Wales. Here, we selected the trips only among
 MSOAs in Greater London.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>od <span class="ot">=</span> <span class="fu">read.csv</span>(<span class="st">&quot;london.csv&quot;</span>) </span>
@@ -367,7 +367,7 @@ MSOAs in Greater London.</p>
 <h1>Hodge-Kodaira decomposition</h1>
 <p>Here, we apply Hodge-Kodaira decomposition, in which human flow is
 uniquely decomposed into a potential-driven (gradient) flow and a curl
-flow (see our paper for the details).</p>
+flow (see our paper for details).</p>
 <p>First, we consider the net flow of movement from a given OD matrix
 <span class="math inline">\(M\)</span>: <span class="math display">\[
   A = M - M^{\intercal}, \label{eq:netflow}
@@ -377,7 +377,7 @@ denotes the transpose of <span class="math inline">\(M\)</span>. Matrix
 described by combinatorial gradient of a potential <span class="math inline">\(s\)</span>, given by <span class="math display">\[
   (\text{grad}\, s)(i, j) =  s_j-s_i.
 \]</span></p>
-<p>Then, we define an optimisation problem for potential <span class="math inline">\(s\)</span>: <span class="math display">\[\begin{equation}
+<p>Then, we define an optimization problem for potential <span class="math inline">\(s\)</span>: <span class="math display">\[\begin{equation}
   \min_s  \lVert   \text{grad}\ s - A \rVert_2 = \min_s \left[
 \sum_{i,j} \left[ (s_j - s_i) - A_{ij} \right]^2 \right].
 \label{eq:optimization_problem}
@@ -388,9 +388,9 @@ orthogonally decomposed into two subspaces: <span class="math display">\[\begin{
 \text{im}(\text{curl}^*),
 \end{equation}\]</span> where <span class="math inline">\(\text{curl}\)</span> is the combinatorial curl
 operator and <span class="math inline">\(\text{curl}^*\)</span> is its
-adjoint operator. Thus, the optimisation problem is equivalent to an
+adjoint operator. Thus, the optimization problem is equivalent to an
 <span class="math inline">\(l_2\)</span>-projection of <span class="math inline">\(A\)</span> onto im(grad), and the minimal norm
-solution is simply given by <span class="math display">\[\begin{equation}
+solution is given by <span class="math display">\[\begin{equation}
   s_i = -\frac{1}{N} \text{div} A = - \frac{1}{N} \sum_{j=1}^N A_{ij},
 \label{eq:potential}
 \end{equation}\]</span> where <span class="math inline">\(s_i\)</span>
@@ -398,86 +398,57 @@ is the potential at the <span class="math inline">\(i\)</span>th
 location and <span class="math inline">\(N\)</span> is the number of
 locations. It is noted that <span class="math inline">\(s_i\)</span> is
 negative potential (<span class="math inline">\(s_i=-V_i\)</span>). This
-means that we observe more trips from a place with lower potential to
-another place with higher potential.</p>
+means we observe more trips from a place with lower potential to another
+with higher potential.</p>
 <p>Using this package, the potential is obtained by the following
 function.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>s <span class="ot">=</span> HodgePotentialHumanFlow<span class="sc">::</span><span class="fu">scalar_potential</span>(od)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(s)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        zone    potential</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 E02000001 244.80671414</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 E02000002  -1.22482197</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 E02000003  -1.15462869</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 E02000004  -1.23397762</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 E02000005  -1.93591048</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 E02000007   0.04170905</span></span></code></pre></div>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Percentage of gradient flow = 52.71</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(s)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        zone    potential</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 E02000001 244.80671414</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 E02000002  -1.22482197</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 E02000003  -1.15462869</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 E02000004  -1.23397762</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 E02000005  -1.93591048</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 E02000007   0.04170905</span></span></code></pre></div>
 </div>
 <div id="plot-the-obtained-potential-landscape" class="section level1">
 <h1>Plot the obtained potential landscape</h1>
 <p>The shapefile of the MSOAs is obtained from <a href="https://data.gov.uk/dataset/2cf1f346-2f74-4c06-bd4b-30d7e4df5ae7/middle-layer-super-output-area-msoa-boundaries">Office
 for National Statistics</a>).</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: libmariadb.so.3: cannot open shared</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; object file: No such file or directory</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: libmariadb.so.3: cannot open shared</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; object file: No such file or directory</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: libcfitsio.so.10: cannot open shared</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; object file: No such file or directory</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: libcfitsio.so.10: cannot open shared</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; object file: No such file or directory</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: libpodofo.so.0.9.8: cannot open shared</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; object file: No such file or directory</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: libpodofo.so.0.9.8: cannot open shared</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; object file: No such file or directory</span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: libmariadb.so.3: cannot open shared</span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; object file: No such file or directory</span></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: libmariadb.so.3: cannot open shared</span></span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; object file: No such file or directory</span></span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: libcfitsio.so.10: cannot open shared</span></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; object file: No such file or directory</span></span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: libcfitsio.so.10: cannot open shared</span></span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; object file: No such file or directory</span></span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: libpodofo.so.0.9.8: cannot open shared</span></span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; object file: No such file or directory</span></span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: libpodofo.so.0.9.8: cannot open shared</span></span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; object file: No such file or directory</span></span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Linking to GEOS 3.11.0, GDAL 3.6.0, PROJ 9.1.0; sf_use_s2() is TRUE</span></span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>shape <span class="ot">=</span> <span class="fu">st_read</span>(<span class="st">&quot;london.geojson&quot;</span>) </span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Reading layer `MSOA_in_London&#39; from data source </span></span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   `/mnt/projects/aoki/HodgePotentialHumanFlow/vignettes/london.geojson&#39; </span></span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   using driver `GeoJSON&#39;</span></span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Simple feature collection with 983 features and 6 fields</span></span>
-<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Geometry type: MULTIPOLYGON</span></span>
-<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Dimension:     XY</span></span>
-<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Bounding box:  xmin: 503569.4 ymin: 155850.7 xmax: 561959.4 ymax: 200934.3</span></span>
-<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Projected CRS: OSGB36 / British National Grid</span></span>
-<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>merged <span class="ot">=</span> <span class="fu">merge</span>(shape, s, <span class="at">all.x=</span>T, <span class="at">by.x=</span><span class="st">&quot;msoa11cd&quot;</span>, <span class="at">by.y=</span><span class="st">&quot;zone&quot;</span>)</span>
-<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(merged)</span>
-<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Simple feature collection with 6 features and 7 fields</span></span>
-<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Geometry type: MULTIPOLYGON</span></span>
-<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Dimension:     XY</span></span>
-<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Bounding box:  xmin: 530968.5 ymin: 180510.9 xmax: 551945.7 ymax: 191139.3</span></span>
-<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Projected CRS: OSGB36 / British National Grid</span></span>
-<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    msoa11cd objectid                 msoa11nm                msoa11nmw</span></span>
-<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 E02000001        1       City of London 001       City of London 001</span></span>
-<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 E02000002        2 Barking and Dagenham 001 Barking and Dagenham 001</span></span>
-<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 E02000003        3 Barking and Dagenham 002 Barking and Dagenham 002</span></span>
-<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 E02000004        4 Barking and Dagenham 003 Barking and Dagenham 003</span></span>
-<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 E02000005        5 Barking and Dagenham 004 Barking and Dagenham 004</span></span>
-<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 E02000007        6 Barking and Dagenham 006 Barking and Dagenham 006</span></span>
-<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   st_areashape st_lengthshape    potential                       geometry</span></span>
-<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1      2897837       9297.742 244.80671414 MULTIPOLYGON (((532155.5 18...</span></span>
-<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2      2161565       8307.072  -1.22482197 MULTIPOLYGON (((548879.6 19...</span></span>
-<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3      2141516       9359.992  -1.15462869 MULTIPOLYGON (((548960.4 18...</span></span>
-<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4      2492948       8476.617  -1.23397762 MULTIPOLYGON (((551551.9 18...</span></span>
-<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5      1187953       7322.466  -1.93591048 MULTIPOLYGON (((549238.9 18...</span></span>
-<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6      1735998       7071.096   0.04170905 MULTIPOLYGON (((549420.5 18...</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressWarnings</span>(<span class="fu">library</span>(sf))</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Linking to GEOS 3.11.0, GDAL 3.6.0, PROJ 9.1.0; sf_use_s2() is TRUE</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>shape <span class="ot">=</span> <span class="fu">st_read</span>(<span class="st">&quot;london.geojson&quot;</span>) </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Reading layer `MSOA_in_London&#39; from data source </span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   `/mnt/projects/aoki/HodgePotentialHumanFlow/vignettes/london.geojson&#39; </span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   using driver `GeoJSON&#39;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Simple feature collection with 983 features and 6 fields</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Geometry type: MULTIPOLYGON</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Dimension:     XY</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Bounding box:  xmin: 503569.4 ymin: 155850.7 xmax: 561959.4 ymax: 200934.3</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Projected CRS: OSGB36 / British National Grid</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>merged <span class="ot">=</span> <span class="fu">merge</span>(shape, s, <span class="at">all.x=</span>T, <span class="at">by.x=</span><span class="st">&quot;msoa11cd&quot;</span>, <span class="at">by.y=</span><span class="st">&quot;zone&quot;</span>)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(merged)</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Simple feature collection with 6 features and 7 fields</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Geometry type: MULTIPOLYGON</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Dimension:     XY</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Bounding box:  xmin: 530968.5 ymin: 180510.9 xmax: 551945.7 ymax: 191139.3</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Projected CRS: OSGB36 / British National Grid</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    msoa11cd objectid                 msoa11nm                msoa11nmw</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 E02000001        1       City of London 001       City of London 001</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 E02000002        2 Barking and Dagenham 001 Barking and Dagenham 001</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 E02000003        3 Barking and Dagenham 002 Barking and Dagenham 002</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 E02000004        4 Barking and Dagenham 003 Barking and Dagenham 003</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 E02000005        5 Barking and Dagenham 004 Barking and Dagenham 004</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 E02000007        6 Barking and Dagenham 006 Barking and Dagenham 006</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   st_areashape st_lengthshape    potential                       geometry</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1      2897837       9297.742 244.80671414 MULTIPOLYGON (((532155.5 18...</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2      2161565       8307.072  -1.22482197 MULTIPOLYGON (((548879.6 19...</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3      2141516       9359.992  -1.15462869 MULTIPOLYGON (((548960.4 18...</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4      2492948       8476.617  -1.23397762 MULTIPOLYGON (((551551.9 18...</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5      1187953       7322.466  -1.93591048 MULTIPOLYGON (((549238.9 18...</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6      1735998       7071.096   0.04170905 MULTIPOLYGON (((549420.5 18...</span></span></code></pre></div>
 <p>Plot the obtained potential landscape using <code>sf</code>
 package.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
