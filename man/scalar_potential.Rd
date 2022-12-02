@@ -10,7 +10,7 @@ scalar_potential(od_table)
 \item{od_table}{A data.frame with three columns: origin, dest, and trips}
 }
 \value{
-a data.frame with two columns: geozone and negative potential
+a data.frame with two columns: zone and potential
 }
 \description{
 This function calculates scalar potential of human flow for a given origin-destionation matrix.

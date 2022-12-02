@@ -11,15 +11,15 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // pontential_in_complete_graph_case
-Rcpp::List pontential_in_complete_graph_case(Rcpp::StringVector& origin, Rcpp::StringVector& dest, Rcpp::NumericVector& trips, Rcpp::StringVector& unique_geozomes);
+List pontential_in_complete_graph_case(StringVector& origin, StringVector& dest, NumericVector& trips, StringVector& unique_geozomes);
 RcppExport SEXP _HodgePotentialHumanFlow_pontential_in_complete_graph_case(SEXP originSEXP, SEXP destSEXP, SEXP tripsSEXP, SEXP unique_geozomesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::StringVector& >::type origin(originSEXP);
-    Rcpp::traits::input_parameter< Rcpp::StringVector& >::type dest(destSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericVector& >::type trips(tripsSEXP);
-    Rcpp::traits::input_parameter< Rcpp::StringVector& >::type unique_geozomes(unique_geozomesSEXP);
+    Rcpp::traits::input_parameter< StringVector& >::type origin(originSEXP);
+    Rcpp::traits::input_parameter< StringVector& >::type dest(destSEXP);
+    Rcpp::traits::input_parameter< NumericVector& >::type trips(tripsSEXP);
+    Rcpp::traits::input_parameter< StringVector& >::type unique_geozomes(unique_geozomesSEXP);
     rcpp_result_gen = Rcpp::wrap(pontential_in_complete_graph_case(origin, dest, trips, unique_geozomes));
     return rcpp_result_gen;
 END_RCPP
