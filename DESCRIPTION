@@ -1,15 +1,20 @@
 Package: HodgePotentialHumanFlow
 Title: Potental of Human flow (Origin-Destination matrix) by Hodge-Kodaira decomposition
-Version: 0.0.0.9000
+Version: 0.0.2
 Authors@R: 
     person("Takaaki", "Aoki", , "takaaki.aoki.work@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-3312-3061"))
-Description: This package implements Hodge-Kodaira decomposition of origin-destination matrix: see Takaaki Aoki, Shota Fujishima and Naoya Fujiwara (2021).
+Description: This package implements Hodge-Kodaira decomposition of origin-destination matrix
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.2
+#RoxygenNote: 7.2.1
 Suggests: 
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+LinkingTo: 
+    Rcpp
+Imports: 
+    Rcpp
+RoxygenNote: 7.2.1

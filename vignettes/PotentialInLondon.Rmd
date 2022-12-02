@@ -1,5 +1,5 @@
 ---
-title: "Potential In London"
+title: "Potential of Human flow"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{PotentialInLondon}
@@ -19,11 +19,11 @@ library(HodgePotentialHumanFlow)
 ```
 
 # Summary
-This vignette shows the scalar potential of a commuting flow in London as a example.
+This vignette shows the scalar potential of a commuting flow in London.
 
 # Dataset: origin-destination matrix in London
 We use a trip dataset from home to workplace in 2011 obtained from [UK Data Service](http://www.nomisweb.co.uk/census/2011/wu03EW).
-The OD matrix denotes the number of commuters aggregated by the middle layer super output area (MSOA) in the census 2011.
+The OD matrix denotes the number of commuters aggregated by the middle layer super output area (MSOA) in the 2011 census.
 The dataset covers the MSOAs in England and Wales.
 Here, we selected the trips only among MSOAs in Greater London.
 ```{r}
@@ -32,7 +32,7 @@ head(od)
 ```
 
 # Hodge-Kodaira decomposition
-Here, we apply Hodge-Kodaira decomposition, in which human flow is uniquely decomposed into a potential-driven (gradient) flow and a curl flow (see our paper for the details).
+Here, we apply Hodge-Kodaira decomposition, in which human flow is uniquely decomposed into a potential-driven (gradient) flow and a curl flow (see our paper for details).
 
 First, we consider the net flow of movement from a given  OD matrix $M$:
 $$
@@ -45,7 +45,7 @@ $$
   (\text{grad}\, s)(i, j) =  s_j-s_i.
 $$
 
-Then, we define an optimisation problem for potential $s$:
+Then, we define an optimization problem for potential $s$:
 \begin{equation}
   \min_s  \lVert   \text{grad}\ s - A \rVert_2 = \min_s \left[ \sum_{i,j} \left[ (s_j - s_i) - A_{ij} \right]^2 \right]. \label{eq:optimization_problem}
 \end{equation}
@@ -54,14 +54,14 @@ According to the combinatorial Hodge theory, the space of net flow $\mathcal{A}$
   \mathcal{A}  = \text{im}(\text{grad})  \oplus \text{im}(\text{curl}^*),
 \end{equation}
 where $\text{curl}$ is the combinatorial curl operator and $\text{curl}^*$ is its adjoint operator.
-Thus, the optimisation problem is equivalent to an $l_2$-projection of $A$ onto im(grad),
-and the minimal norm solution is simply given by
+Thus, the optimization problem is equivalent to an $l_2$-projection of $A$ onto im(grad),
+and the minimal norm solution is given by
 \begin{equation}
   s_i = -\frac{1}{N} \text{div} A = - \frac{1}{N} \sum_{j=1}^N A_{ij}, \label{eq:potential}
 \end{equation}
 where $s_i$ is the potential at the $i$th location and $N$ is the number of locations. 
 It is noted that $s_i$ is negative potential ($s_i=-V_i$).
-This means that we observe more trips from a place with lower potential to another place with higher potential.
+This means we observe more trips from a place with lower potential to another with higher potential.
 
 Using this package, the potential is obtained by the following function.
 ```{r}
@@ -73,9 +73,9 @@ head(s)
 The shapefile of the MSOAs is obtained from [Office for National Statistics](https://data.gov.uk/dataset/2cf1f346-2f74-4c06-bd4b-30d7e4df5ae7/middle-layer-super-output-area-msoa-boundaries)).
 
 ```{r}
-library(sf)
+suppressWarnings(library(sf))
 shape = st_read("london.geojson") 
-merged = merge(shape, s, all.x=T, by.x="msoa11cd", by.y="geozone")
+merged = merge(shape, s, all.x=T, by.x="msoa11cd", by.y="zone")
 head(merged)
 ```
 
@@ -84,5 +84,5 @@ Plot the obtained potential landscape using ```sf``` package.
 library(ggplot2)
 library(viridis)
 library(scales)
-ggplot(data=merged, aes(fill=NegativePotential)) + geom_sf(color="black", lwd=0.2)  + scale_fill_viridis_c(option="viridis", trans=modulus_trans(0)) + theme_bw() + theme(axis.title = element_blank(), axis.ticks = element_blank(), axis.text = element_blank(),panel.grid.major = element_line(colour = "transparent"))
+ggplot(data=merged, aes(fill=potential)) + geom_sf(color="black", lwd=0.2)  + scale_fill_viridis_c(option="viridis", trans=modulus_trans(0)) + theme_bw() + theme(axis.title = element_blank(), axis.ticks = element_blank(), axis.text = element_blank(),panel.grid.major = element_line(colour = "transparent"))
 ```
