@@ -75,7 +75,7 @@ The shapefile of the MSOAs is obtained from [Office for National Statistics](htt
 ```{r}
 library(sf)
 shape = st_read("london.geojson") 
-merged = merge(shape, s, all.x=T, by.x="msoa11cd", by.y="geozone")
+merged = merge(shape, s, all.x=T, by.x="msoa11cd", by.y="zone")
 head(merged)
 ```
 
@@ -84,5 +84,5 @@ Plot the obtained potential landscape using ```sf``` package.
 library(ggplot2)
 library(viridis)
 library(scales)
-ggplot(data=merged, aes(fill=NegativePotential)) + geom_sf(color="black", lwd=0.2)  + scale_fill_viridis_c(option="viridis", trans=modulus_trans(0)) + theme_bw() + theme(axis.title = element_blank(), axis.ticks = element_blank(), axis.text = element_blank(),panel.grid.major = element_line(colour = "transparent"))
+ggplot(data=merged, aes(fill=potential)) + geom_sf(color="black", lwd=0.2)  + scale_fill_viridis_c(option="viridis", trans=modulus_trans(0)) + theme_bw() + theme(axis.title = element_blank(), axis.ticks = element_blank(), axis.text = element_blank(),panel.grid.major = element_line(colour = "transparent"))
 ```

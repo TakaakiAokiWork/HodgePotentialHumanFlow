@@ -4,7 +4,7 @@
 \name{HodgePotentialHumanFlow-package}
 \alias{HodgePotentialHumanFlow}
 \alias{HodgePotentialHumanFlow-package}
-\title{HodgePotentialHumanFlow: Potental of Human flow (Origin-Destination matrix) by Hodge-Kodaira decomposition}
+\title{Scalar potential of origin-destionation matrix by Hodge-Kodaira decompostion}
 \description{
 This package implements Hodge-Kodaira decomposition of origin-destination matrix: see Takaaki Aoki, Shota Fujishima and Naoya Fujiwara (2021).
 }

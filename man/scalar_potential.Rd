@@ -2,7 +2,7 @@
 % Please edit documentation in R/HodgePotentialHumanFlow-package.R
 \name{scalar_potential}
 \alias{scalar_potential}
-\title{Scalar potential of origin-destionation matrix by Hodge-Kodaira decompostion}
+\title{This function calculates scalar potential of human flow for a given origin-destionation matrix.}
 \usage{
 scalar_potential(od_table)
 }
