@@ -40,5 +40,21 @@ scalar_potential_with_details = function(od_table){
 
   return(res) 
 }
+
+#' This function calculates scalar potential of human flow for a given origin-destionation matrix (graph version)
+#'
+#' @param flow_on_edges A data.frame with three columns: vertex1, vertex2, and netflow
+#' @return This function returns a list:
+#' - value: a data.frame with three columns: zone, potential, p-value
+#' - R2: percentage of gradient component
+#' @export
+scalar_potential_on_graph = function(flow_on_edges){
+  unique_geozones = unique(union(flow_on_edges$vertex1, flow_on_edges$vertex2))
+  res = pontential_on_graph(flow_on_edges$vertex1, flow_on_edges$vertex2, flow_on_edges$netflow, unique_geozones)
+  return(res) 
+}
+
+
+
 ## usethis namespace: end
 NULL

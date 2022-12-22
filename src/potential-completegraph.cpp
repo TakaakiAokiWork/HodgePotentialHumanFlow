@@ -57,3 +57,4 @@ List pontential_in_complete_graph_case(
   List res = Rcpp::List::create(Named("value") = df, Named("R2") = R2, Named("sd_null") = sd_null);
   return(res);
 }
+

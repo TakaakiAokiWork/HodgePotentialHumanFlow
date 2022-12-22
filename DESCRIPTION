@@ -14,7 +14,9 @@ Suggests:
     rmarkdown
 VignetteBuilder: knitr
 LinkingTo: 
-    Rcpp
+    Rcpp,
+    RcppGSL
 Imports: 
-    Rcpp
+    Rcpp,
+    RcppGSL
 RoxygenNote: 7.2.1
