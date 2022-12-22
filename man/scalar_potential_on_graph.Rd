@@ -4,10 +4,14 @@
 \alias{scalar_potential_on_graph}
 \title{This function calculates scalar potential of human flow for a given origin-destionation matrix (graph version)}
 \usage{
-scalar_potential_on_graph(flow_on_edges)
+scalar_potential_on_graph(flow_on_edges, num_samples = 1e+05, seed = -1)
 }
 \arguments{
-\item{flow_on_edges}{A data.frame with three columns: vertex1, vertex2, and netflow}
+\item{flow_on_edges}{A data.frame with three columns: vertex1, vertex2, and netflow.
+\itemize{
+\item num_samples: Monte calro samples (default = 1e5)
+\item seed: Monte calro samples (default = -1, then generate it by std::random_device)
+}}
 }
 \value{
 This function returns a list:

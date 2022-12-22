@@ -26,8 +26,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // pontential_on_graph
-List pontential_on_graph(StringVector& vertex1, StringVector& vertex2, NumericVector& netflow_R, StringVector& unique_geozomes);
-RcppExport SEXP _HodgePotentialHumanFlow_pontential_on_graph(SEXP vertex1SEXP, SEXP vertex2SEXP, SEXP netflow_RSEXP, SEXP unique_geozomesSEXP) {
+List pontential_on_graph(StringVector& vertex1, StringVector& vertex2, NumericVector& netflow_R, StringVector& unique_geozomes, size_t num_samples, unsigned long int seed);
+RcppExport SEXP _HodgePotentialHumanFlow_pontential_on_graph(SEXP vertex1SEXP, SEXP vertex2SEXP, SEXP netflow_RSEXP, SEXP unique_geozomesSEXP, SEXP num_samplesSEXP, SEXP seedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -35,14 +35,16 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< StringVector& >::type vertex2(vertex2SEXP);
     Rcpp::traits::input_parameter< NumericVector& >::type netflow_R(netflow_RSEXP);
     Rcpp::traits::input_parameter< StringVector& >::type unique_geozomes(unique_geozomesSEXP);
-    rcpp_result_gen = Rcpp::wrap(pontential_on_graph(vertex1, vertex2, netflow_R, unique_geozomes));
+    Rcpp::traits::input_parameter< size_t >::type num_samples(num_samplesSEXP);
+    Rcpp::traits::input_parameter< unsigned long int >::type seed(seedSEXP);
+    rcpp_result_gen = Rcpp::wrap(pontential_on_graph(vertex1, vertex2, netflow_R, unique_geozomes, num_samples, seed));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
     {"_HodgePotentialHumanFlow_pontential_in_complete_graph_case", (DL_FUNC) &_HodgePotentialHumanFlow_pontential_in_complete_graph_case, 4},
-    {"_HodgePotentialHumanFlow_pontential_on_graph", (DL_FUNC) &_HodgePotentialHumanFlow_pontential_on_graph, 4},
+    {"_HodgePotentialHumanFlow_pontential_on_graph", (DL_FUNC) &_HodgePotentialHumanFlow_pontential_on_graph, 6},
     {NULL, NULL, 0}
 };
 

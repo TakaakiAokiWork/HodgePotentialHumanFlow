@@ -11,7 +11,7 @@ pontential_in_complete_graph_case <- function(origin, dest, trips, unique_geozom
 #' First example
 #' @param args string vector
 #' @export
-pontential_on_graph <- function(vertex1, vertex2, netflow_R, unique_geozomes) {
-    .Call(`_HodgePotentialHumanFlow_pontential_on_graph`, vertex1, vertex2, netflow_R, unique_geozomes)
+pontential_on_graph <- function(vertex1, vertex2, netflow_R, unique_geozomes, num_samples, seed) {
+    .Call(`_HodgePotentialHumanFlow_pontential_on_graph`, vertex1, vertex2, netflow_R, unique_geozomes, num_samples, seed)
 }
 

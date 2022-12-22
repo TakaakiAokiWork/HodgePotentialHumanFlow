@@ -4,7 +4,14 @@
 \alias{pontential_on_graph}
 \title{First example}
 \usage{
-pontential_on_graph(vertex1, vertex2, netflow_R, unique_geozomes)
+pontential_on_graph(
+  vertex1,
+  vertex2,
+  netflow_R,
+  unique_geozomes,
+  num_samples,
+  seed
+)
 }
 \arguments{
 \item{args}{string vector}
