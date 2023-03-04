@@ -7,6 +7,7 @@
 pontential_on_graph(
   vertex1,
   vertex2,
+  weight,
   netflow_R,
   unique_geozomes,
   num_samples,

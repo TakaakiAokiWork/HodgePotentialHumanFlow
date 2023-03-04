@@ -23,14 +23,15 @@ bool is_equal(double a,double b){
 //' @export
 // [[Rcpp::export]]
 List pontential_on_graph(
-    StringVector &vertex1, 
+    StringVector &vertex1,  // (v1,v2,weight) => weighted edge list (default weight =1)
     StringVector &vertex2, 
-    NumericVector &netflow_R, 
+    NumericVector &weight, 
+    NumericVector &netflow_R, // Y_ij edge flow for v1,v2 
     StringVector &unique_geozomes,
     size_t num_samples,
     unsigned long int seed){
 
-  // mapping zone string to index
+  // mapping zone (string) to index (size_t)
   std::unordered_map<Rcpp::String, size_t> zones_to_index;
   for(size_t i = 0; i< size_t(unique_geozomes.size());++i){ zones_to_index[ unique_geozomes[i] ] = i; }
 
@@ -49,14 +50,15 @@ List pontential_on_graph(
   // set up Laplacian matrix
   gsl_matrix *L = gsl_matrix_calloc(N,N);
   {
-    std::vector<int> degree(N,0);
+    std::vector<double> degree(N,0);
     for(size_t m = 0; m < edgelist.size(); ++m){
       int i = edgelist[m].first;
       int j = edgelist[m].second;
-      gsl_matrix_set(L,i,j,-1);
-      gsl_matrix_set(L,j,i,-1);
-      degree[i] +=1;
-      degree[j] +=1;
+      double w = weight[m];
+      gsl_matrix_set(L,i,j,-w);
+      gsl_matrix_set(L,j,i,-w);
+      degree[i] +=w;
+      degree[j] +=w;
     }
     for(size_t i = 0; i < N; ++i){
       gsl_matrix_set(L, i, i, degree[i]);

@@ -52,10 +52,25 @@ scalar_potential_with_details = function(od_table){
 #' @export
 scalar_potential_on_graph = function(flow_on_edges, num_samples = 1e5, seed =-1){
   unique_geozones = unique(union(flow_on_edges$vertex1, flow_on_edges$vertex2))
-  res = pontential_on_graph(flow_on_edges$vertex1, flow_on_edges$vertex2, flow_on_edges$netflow, unique_geozones, num_samples, seed)
+  weight = rep(1, length(flow_on_edges$vertex1) )
+  res = pontential_on_graph(flow_on_edges$vertex1, flow_on_edges$vertex2, weight, flow_on_edges$netflow,unique_geozones, num_samples, seed)
   return(res) 
 }
 
+#' This function calculates scalar potential of human flow for a given origin-destionation matrix (weighted graph version)
+#'
+#' @param flow_on_edges A data.frame with three columns: vertex1, vertex2, weight, and netflow.
+#' - num_samples: Monte calro samples (default = 1e5)
+#' - seed: Monte calro samples (default = -1, then generate it by std::random_device)
+#' @return This function returns a list:
+#' - value: a data.frame with three columns: zone, potential, p-value
+#' - R2: percentage of gradient component
+#' @export
+scalar_potential_on_weighted_graph = function(flow_on_edges, num_samples = 1e5, seed =-1){
+  unique_geozones = unique(union(flow_on_edges$vertex1, flow_on_edges$vertex2))
+  res = pontential_on_graph(flow_on_edges$vertex1, flow_on_edges$vertex2, flow_on_edges$weight,  flow_on_edges$netflow, unique_geozones, num_samples, seed)
+  return(res) 
+}
 
 
 ## usethis namespace: end
