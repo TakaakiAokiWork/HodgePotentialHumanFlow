@@ -1,6 +1,6 @@
 Package: HodgePotentialHumanFlow
 Title: Potental of Human flow (Origin-Destination matrix) by Hodge-Kodaira decomposition
-Version: 0.0.2
+Version: 0.0.3
 Authors@R: 
     person("Takaaki", "Aoki", , "takaaki.aoki.work@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-3312-3061"))
@@ -14,7 +14,9 @@ Suggests:
     rmarkdown
 VignetteBuilder: knitr
 LinkingTo: 
-    Rcpp
+    Rcpp,
+    RcppGSL
 Imports: 
-    Rcpp
-RoxygenNote: 7.2.1
+    Rcpp,
+    RcppGSL
+RoxygenNote: 7.2.3
