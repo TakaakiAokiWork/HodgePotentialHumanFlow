@@ -14,11 +14,7 @@ scalar_potential_on_graph(flow_on_edges, num_samples = 1e+05, seed = -1)
 }}
 }
 \value{
-This function returns a list:
-\itemize{
-\item value: a data.frame with three columns: zone, potential, p-value
-\item R2: percentage of gradient component
-}
+This function returns a data.frame with three columns: zone, potential, p-value
 }
 \description{
 This function calculates scalar potential of human flow for a given origin-destionation matrix (graph version)

@@ -1,5 +1,5 @@
 ---
-title: "Potential of Human flow"
+title: "Potential of Human flow (complete graph case)"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{PotentialInLondon}
