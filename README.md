@@ -3,6 +3,11 @@
 This package provides Hodge-Kodaira decomposition tools for human flow. 
 See a [tutorial](https://htmlpreview.github.io/?https://github.com/TakaakiAokiWork/HodgePotentialHumanFlow/blob/main/doc/PotentialInLondon.html) for details.
 
+## Install
+```
+library(devtools)
+install_github("TakaakiAokiWork/HodgePotentialHumanFlow")
+```
 
 ## Abstract from our paper [[1]](#1)
 

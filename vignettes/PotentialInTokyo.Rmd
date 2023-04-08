@@ -1,0 +1,174 @@
+---
+editor_options: 
+  markdown: 
+    wrap: sentence
+---
+
+------------------------------------------------------------------------
+
+title: "Potential of Human flow (general graph case)" output: rmarkdown::html_vignette vignette: \> %\VignetteIndexEntry{PotentialInTokyo} %\VignetteEngine{knitr::rmarkdown} %\VignetteEncoding{UTF-8} ---Z
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Tutorial: Potential of Human flow (general graph case)
+
+This tutorial demonstrates how to detect significant sinks and sources of human flow according to the scalar potential in the case of the Tokyo metropolitan area.
+
+## Dataset: origin-destination matrix in Tokyo with trip distance
+
+We used a dataset from the person-trip surveys conducted in 2018 in the Tokyo metropolitan area, which is publicly available from [the Tokyo Metropolitan Region Transportation Planning Commission](https://www.tokyo-pt.jp/data/01_01).
+
+```{r}
+suppressPackageStartupMessages(library(tidyverse))
+od = read_csv("tokyo2018.csv",
+              col_types=list(trips = "n", road_distance_in_km="n",.default="c")) 
+od
+```
+
+The first two columns indicate the origin and destination zones, representing the geographical zone code defined by the Tokyo Metropolitan Region Transportation Planning Commission.
+The *trips* column shows the number of trips.
+We added the *road_distance_in_km* column showing the trip distance from the origin to the destination.
+This distance is evaluated by the road distance between the centroids of the origin and destination zones, calculated by the [Open Source Routing Machine (OSRM)](https://project-osrm.org/) based on [Open Street Map](https://www.openstreetmap.org/).
+The dataset contains 615 unique zones and 615 $\times$ 614 rows (excluding the trips within each zone).
+
+## Preprocess: convert the given dataset to net-flow $Y$ on a graph $G(V,E)$
+
+As described in the main text, we denoted the net movements of people as $Y$ on a graph \$G(V,E).
+In the current context, the vertices $V$ correspond to the locations and the edges $E$ are the connections between them.
+
+Distances $d_{ij}$ between locations $i$ and $j$ crucially affect their connections.
+Trips will be rare for long distances even if the potentials at the endpoints differ.
+On the other hand, no trips are often observed for short distances.
+This implies that zero movements happen in two distinct situations.
+To distinguish the nonexistence of movements based on distance and other factors, we assumed that a pair of locations is connected if its road distance $d_{ij}$ is within a threshold $\theta$.
+
+We calculate the threshold distance $\theta$ above which trips are rarely observed.
+We show the cumulative distribution of trip distance $P(X<d)$ as a function of trip distance $d$.
+The threshold $\theta$ is determined based on criterion $P(X<\theta) = 0.99$.
+
+```{r}
+df = od %>% arrange(road_distance_in_km) %>% mutate(cum_trips = cumsum(trips))
+df = df %>% mutate( cum_dist = cum_trips / sum(df$trips))
+df
+
+# find intersection with threshold
+y0 = 0.99
+RootLinearInterpolant <- function (x, y, y0 = 0) {
+  if (is.unsorted(x)) {
+    ind <- order(x)
+    x <- x[ind]; y <- y[ind]
+  }
+  z <- y - y0
+  k <- which(z[-1] * z[-length(z)] < 0)
+  xk <- x[k] - z[k] * (x[k + 1] - x[k]) / (z[k + 1] - z[k])
+  return(xk)
+}
+thres = RootLinearInterpolant(df$road_distance_in_km, df$cum_dist, y0)
+
+library(ggplot2)
+theme_set(theme_minimal())
+ggplot(df, aes(x = road_distance_in_km, y=cum_dist) ) +
+  geom_line(linewidth=1.3) + 
+  xlab("Distance [km]") + 
+  ylab("Cumulative distribution, Prob. (X < d)")  + 
+  geom_hline(yintercept= y0, color="red", linetype="dashed") +
+  annotate("segment", x=thres,xend=thres, y=y0 - 0.1, yend=y0, 
+           arrow=arrow(length = unit(2, "mm")) ) + 
+  annotate("text", x = thres, y = y0 - 0.15, 
+           label=sprintf("%.1fkm", thres),size=3)
+```
+
+Next, we make net flows between all pairs of locations and select them by $d_{ij} < \theta$.
+
+```{r}
+od_forward = od 
+od_backward = od_forward %>% select(origin,dest,trips) %>% 
+  rename(origin_new = dest, dest_new = origin) %>% 
+  rename(origin = origin_new, dest = dest_new, back_trips = trips ) %>%
+  select(origin, dest, back_trips)
+
+
+netflow = od_forward %>% left_join(od_backward,by = join_by(origin, dest)) %>%
+  filter(origin > dest) %>% mutate(netflow = trips - back_trips) %>% 
+  rename(vertex1 = origin, vertex2=dest)
+
+netflow_selected = netflow %>% 
+  filter(road_distance_in_km < thres) %>% 
+  select(vertex1,vertex2,netflow)
+
+netflow_selected
+```
+
+## Calculate the potential $s$ for the net flow $Y$
+
+The potential in Equation (1) in the main text is calculated by using function *scalar_potential_on_graph* in the *HodgePotentialHumanFlow* package.
+
+```{r}
+library(HodgePotentialHumanFlow)
+s = HodgePotentialHumanFlow::scalar_potential_on_graph(netflow_selected)
+head(s)
+```
+
+The function returns a dataframe with three columns: zone, potential, and $p$-value.
+The $p$-value indicates $P(\hat{s}_i > s_i)$ under the null hypothesis (see the main text for details).
+The sample number for calculating this pseudo $p$-value can be specified by option *num_samples* (default = 1e5).
+
+```{r}
+s = HodgePotentialHumanFlow::scalar_potential_on_graph(netflow_selected, num_samples = 1e6)
+```
+
+We plot the potential on a map using a shapefile publicly available from [the Tokyo Metropolitan Region Transportation Planning Commission](https://www.tokyo-pt.jp/data/01_01).
+
+```{r}
+library(sf)
+map = st_read("tokyo2018.gpkg", quiet=T) 
+map = map %>% left_join(s)
+
+library(ggplot2)
+library(viridis,quietly = T)
+suppressPackageStartupMessages(library(urbnthemes,quietly=T))
+library(ggspatial,quietly=T)
+suppressPackageStartupMessages(library(scales,quiet = T))
+
+
+ggplot(data=map, aes(fill=potential)) + 
+  geom_sf(color="black", lwd=0.2)  +
+  scale_fill_viridis_c(option="viridis", trans=modulus_trans(0.3)) +
+  theme_urbn_map(base_family="Helvetica") +
+  theme(legend.key.height=unit(1.5,"line")) +
+  annotation_scale(location = "bl") + 
+  annotation_north_arrow(location = "br", which_north = "grid", 
+  style = north_arrow_fancy_orienteering(text_size =0, line_width=0.5)) 
+```
+
+## Detect significant sinks and sources
+
+To detect significant sinks for zones with a positive potential, a multiple-comparison test is performed using the $p$-value under the control of the false discovery rate (FDR), $\alpha (=0.05)$, with a standard Benjamini-Hochberg procedure.
+Similarly, for zones with a negative potential, a multiple-comparison test is performed using the $p$-value of $1 - P(\hat{s}_i > s_i)$ under FDR control.
+
+```{r}
+df_sink= s %>% filter(potential >= 0)
+df_sink$pvalue_adj = p.adjust(df_sink$pvalue_above, method="fdr")
+df_source= s %>% filter(potential < 0)
+df_source$pvalue_adj = p.adjust(1 - df_source$pvalue_above, method="fdr")
+df = rbind(df_sink, df_source)
+
+library(sf)
+alpha = 0.05
+map = st_read("tokyo2018.gpkg", quiet=T) 
+map = map %>% left_join(df) %>% rowwise() %>% 
+   mutate(type = case_when(
+                      potential >= 0 & pvalue_adj < alpha ~ "Significant sink",
+                      potential < 0 & pvalue_adj < alpha ~ "Significant source",
+   ))
+ggplot(data=map, aes(fill=type)) + 
+  geom_sf(color="black", lwd=0.2)  +
+  theme_urbn_map(base_family="Helvetica") +
+  scale_fill_manual(values = c("#e41a1c","navyblue"),na.translate = F) +
+  theme(legend.title=element_blank())
+```
