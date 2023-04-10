@@ -1,13 +1,11 @@
 ---
-editor_options: 
-  markdown: 
-    wrap: sentence
+title: "Potential of Human flow (general graph case)"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Potential of Human flow (general graph case)}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
-
-------------------------------------------------------------------------
-
-title: "Potential of Human flow (general graph case)" output: rmarkdown::html_vignette vignette: \> %\VignetteIndexEntry{PotentialInTokyo} %\VignetteEngine{knitr::rmarkdown} %\VignetteEncoding{UTF-8} ---Z
-
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -119,7 +117,7 @@ The $p$-value indicates $P(\hat{s}_i > s_i)$ under the null hypothesis (see the 
 The sample number for calculating this pseudo $p$-value can be specified by option *num_samples* (default = 1e5).
 
 ```{r}
-s = HodgePotentialHumanFlow::scalar_potential_on_graph(netflow_selected, num_samples = 1e6)
+s = HodgePotentialHumanFlow::scalar_potential_on_graph(netflow_selected, num_samples = 1e5)
 ```
 
 We plot the potential on a map using a shapefile publicly available from [the Tokyo Metropolitan Region Transportation Planning Commission](https://www.tokyo-pt.jp/data/01_01).

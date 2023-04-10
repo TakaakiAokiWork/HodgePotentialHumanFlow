@@ -2,10 +2,9 @@
 
 export(pontential_in_complete_graph_case)
 export(pontential_on_graph)
-export(scalar_potential)
+export(scalar_potential_on_complete_graph)
+export(scalar_potential_on_complete_graph_with_pvalue)
 export(scalar_potential_on_graph)
-export(scalar_potential_on_graph_details)
 export(scalar_potential_on_weighted_graph)
-export(scalar_potential_with_details)
 importFrom(Rcpp,sourceCpp)
 useDynLib(HodgePotentialHumanFlow, .registration = TRUE)
