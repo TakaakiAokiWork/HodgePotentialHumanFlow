@@ -2,7 +2,7 @@
 % Please edit documentation in R/HodgePotentialHumanFlow-package.R
 \name{scalar_potential_on_weighted_graph}
 \alias{scalar_potential_on_weighted_graph}
-\title{This function calculates scalar potential of human flow for a given origin-destionation matrix (weighted graph version)}
+\title{This function calculates scalar potential of human flow for a given origin-destination matrix with p-value (weighted graph version)}
 \usage{
 scalar_potential_on_weighted_graph(
   flow_on_edges,
@@ -18,12 +18,8 @@ scalar_potential_on_weighted_graph(
 }}
 }
 \value{
-This function returns a list:
-\itemize{
-\item value: a data.frame with three columns: zone, potential, p-value
-\item R2: percentage of gradient component
-}
+This function returns a data.frame with three columns: zone, potential, p-value
 }
 \description{
-This function calculates scalar potential of human flow for a given origin-destionation matrix (weighted graph version)
+This function calculates scalar potential of human flow for a given origin-destination matrix with p-value (weighted graph version)
 }

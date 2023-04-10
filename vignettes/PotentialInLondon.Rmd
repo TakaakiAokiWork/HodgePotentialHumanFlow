@@ -2,7 +2,7 @@
 title: "Potential of Human flow (complete graph case)"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{PotentialInLondon}
+  %\VignetteIndexEntry{Potential of Human flow (complete graph case)}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -65,7 +65,7 @@ This means we observe more trips from a place with lower potential to another wi
 
 Using this package, the potential is obtained by the following function.
 ```{r}
-s = HodgePotentialHumanFlow::scalar_potential(od)
+s = HodgePotentialHumanFlow::scalar_potential_on_complete_graph(od)
 head(s)
 ```
 

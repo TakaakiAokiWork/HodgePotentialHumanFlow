@@ -2,7 +2,7 @@
 % Please edit documentation in R/HodgePotentialHumanFlow-package.R
 \name{scalar_potential_on_graph}
 \alias{scalar_potential_on_graph}
-\title{This function calculates scalar potential of human flow for a given origin-destionation matrix (graph version)}
+\title{This function calculates scalar potential of human flow for a given origin-destination matrix with p-value (unweighted graph version)}
 \usage{
 scalar_potential_on_graph(flow_on_edges, num_samples = 1e+05, seed = -1)
 }
@@ -17,5 +17,5 @@ scalar_potential_on_graph(flow_on_edges, num_samples = 1e+05, seed = -1)
 This function returns a data.frame with three columns: zone, potential, p-value
 }
 \description{
-This function calculates scalar potential of human flow for a given origin-destionation matrix (graph version)
+This function calculates scalar potential of human flow for a given origin-destination matrix with p-value (unweighted graph version)
 }
