@@ -12,3 +12,4 @@ pontential_in_complete_graph_case(origin, dest, trips, unique_geozomes)
 \description{
 First example
 }
+\keyword{internal}

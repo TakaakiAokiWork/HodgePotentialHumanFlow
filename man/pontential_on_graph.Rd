@@ -20,3 +20,4 @@ pontential_on_graph(
 \description{
 First example
 }
+\keyword{internal}

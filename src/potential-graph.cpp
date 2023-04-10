@@ -20,7 +20,7 @@ bool is_equal(double a,double b){
 
 //' First example
 //' @param args string vector
-//' @export
+//' @keywords internal
 // [[Rcpp::export]]
 List pontential_on_graph(
     StringVector &vertex1,  // (v1,v2,weight) => weighted edge list (default weight =1)

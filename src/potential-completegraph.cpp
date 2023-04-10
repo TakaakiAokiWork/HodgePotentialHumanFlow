@@ -6,7 +6,7 @@ using namespace Rcpp;
 
 //' First example
 //' @param args string vector
-//' @export
+//' @keywords internal
 // [[Rcpp::export]]
 List pontential_in_complete_graph_case(
     StringVector &origin, 

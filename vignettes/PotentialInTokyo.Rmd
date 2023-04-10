@@ -104,7 +104,7 @@ netflow_selected
 
 ## Calculate the potential $s$ for the net flow $Y$
 
-The potential in Equation (1) in the main text is calculated by using function *scalar_potential_on_graph* in the *HodgePotentialHumanFlow* package.
+The potential is calculated by using function *scalar_potential_on_graph* in the *HodgePotentialHumanFlow* package.
 
 ```{r}
 library(HodgePotentialHumanFlow)

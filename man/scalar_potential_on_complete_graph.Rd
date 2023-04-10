@@ -2,7 +2,7 @@
 % Please edit documentation in R/HodgePotentialHumanFlow-package.R
 \name{scalar_potential_on_complete_graph}
 \alias{scalar_potential_on_complete_graph}
-\title{This function calculates scalar potential of human flow for a given origin-destination matrix (complete (graph version).}
+\title{This function calculates scalar potential of human flow for a given origin-destination matrix (complete graph version).}
 \usage{
 scalar_potential_on_complete_graph(od_table)
 }
@@ -13,5 +13,5 @@ scalar_potential_on_complete_graph(od_table)
 a data.frame with two columns: zone and potential
 }
 \description{
-This function calculates scalar potential of human flow for a given origin-destination matrix (complete (graph version).
+This function calculates scalar potential of human flow for a given origin-destination matrix (complete graph version).
 }

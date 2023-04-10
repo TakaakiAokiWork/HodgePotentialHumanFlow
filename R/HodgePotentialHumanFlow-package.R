@@ -10,7 +10,7 @@
 
 ## usethis namespace: start
 
-#' This function calculates scalar potential of human flow for a given origin-destination matrix (complete (graph version).
+#' This function calculates scalar potential of human flow for a given origin-destination matrix (complete graph version).
 #'
 #' @param od_table A data.frame with three columns: origin, dest, and trips
 #' @return a data.frame with two columns: zone and potential
