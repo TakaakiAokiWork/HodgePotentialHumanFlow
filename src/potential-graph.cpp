@@ -102,61 +102,63 @@ List pontential_on_graph(
 
 
   /*
-   *   Calculate potential distribution of the null model (Monte Calro)
+   *   Calculate potential distribution of the null model (Monte Calro) if num_samples > 0
    */
   std::vector<double> pvalue_above(N,0.0); // prob. when  s_i(null) > s_i(original)
-  {
-    Rprintf("Calculating p-values by monte calro (%ld steps).", num_samples);
-    std::bernoulli_distribution dist_flip(0.5);
-
-    // MC sampling
-    std::vector<size_t> num_exceed_samples_in_nullmodel(N,0); // #samples if s_i(null) > s_i(original)
-                                                           
-#pragma omp parallel
+  if (num_samples > 0){
     {
-#pragma omp single
+      Rprintf("Calculating p-values by monte calro (%ld steps).", num_samples);
+      std::bernoulli_distribution dist_flip(0.5);
+
+      // MC sampling
+      std::vector<size_t> num_exceed_samples_in_nullmodel(N,0); // #samples if s_i(null) > s_i(original)
+
+#pragma omp parallel
       {
-        Rprintf(" thread = %d", omp_get_num_threads() );
-      }
-      // shared local variables
-      gsl_vector * tmp_potential = gsl_vector_calloc(N);
-      std::vector<double> randomized_flow( netflow );
-      std::vector<size_t> num_exceed_local(N,0);
-      std::mt19937_64 rng;
+#pragma omp single
+        {
+          Rprintf(" thread = %d", omp_get_num_threads() );
+        }
+        // shared local variables
+        gsl_vector * tmp_potential = gsl_vector_calloc(N);
+        std::vector<double> randomized_flow( netflow );
+        std::vector<size_t> num_exceed_local(N,0);
+        std::mt19937_64 rng;
 
 #pragma omp critical
-      {
-        // random generator for each thread
-        std::random_device rd;
-        std::seed_seq seq{ rd(), rd(), rd(), rd()};
-        rng.seed(seq);
-      }
+        {
+          // random generator for each thread
+          std::random_device rd;
+          std::seed_seq seq{ rd(), rd(), rd(), rd()};
+          rng.seed(seq);
+        }
 
 #pragma omp for schedule(static) nowait
-      for(size_t n = 0; n < num_samples; ++n){
-        // random order
-        std::shuffle(randomized_flow.begin(), randomized_flow.end(), rng);
-        // flip by prob. of 0.5
-        for(size_t m = 0; m < randomized_flow.size(); ++m){
-          if ( dist_flip(rng)){ randomized_flow[m] = - randomized_flow[m]; }
-        }
-        calculate_potential(randomized_flow, tmp_potential);
-        for(size_t i =0; i < N; ++i){
-          if (tmp_potential->data[i] > potential->data[i]){
-            num_exceed_local[i] += 1;
+        for(size_t n = 0; n < num_samples; ++n){
+          // random order
+          std::shuffle(randomized_flow.begin(), randomized_flow.end(), rng);
+          // flip by prob. of 0.5
+          for(size_t m = 0; m < randomized_flow.size(); ++m){
+            if ( dist_flip(rng)){ randomized_flow[m] = - randomized_flow[m]; }
+          }
+          calculate_potential(randomized_flow, tmp_potential);
+          for(size_t i =0; i < N; ++i){
+            if (tmp_potential->data[i] > potential->data[i]){
+              num_exceed_local[i] += 1;
+            }
           }
         }
-      }
 #pragma omp critical
-      {
-        for(size_t i =0; i < N; ++i){ num_exceed_samples_in_nullmodel[i] += num_exceed_local[i];} // reduction
+        {
+          for(size_t i =0; i < N; ++i){ num_exceed_samples_in_nullmodel[i] += num_exceed_local[i];} // reduction
+        }
+
+        gsl_vector_free(tmp_potential);
+      } // end of parallel
+
+      for(size_t i=0; i< N; ++i){
+        pvalue_above[i] = double(num_exceed_samples_in_nullmodel[i]) / num_samples;
       }
-
-      gsl_vector_free(tmp_potential);
-    } // end of parallel
-
-    for(size_t i=0; i< N; ++i){
-      pvalue_above[i] = double(num_exceed_samples_in_nullmodel[i]) / num_samples;
     }
   }
 
@@ -176,7 +178,13 @@ List pontential_on_graph(
   // make a return object
   NumericVector potential_R(N);
   for(size_t i = 0; i < N; ++i){ potential_R[i] = potential->data[i]; } 
-  Rcpp::DataFrame df = Rcpp::DataFrame::create(Named("zone") = unique_geozomes, Named("potential") = potential_R, Named("pvalue_above") = wrap(pvalue_above) );
+
+  Rcpp::DataFrame df;
+  if (num_samples >0){
+    df = Rcpp::DataFrame::create(Named("zone") = unique_geozomes, Named("potential") = potential_R, Named("pvalue_above") = wrap(pvalue_above) );
+  } else{
+    df = Rcpp::DataFrame::create(Named("zone") = unique_geozomes, Named("potential") = potential_R );
+  }
 
   List res = Rcpp::List::create(Named("value") = df, Named("R2") = R2, Named("seed_used") = seed);
   return(res);
