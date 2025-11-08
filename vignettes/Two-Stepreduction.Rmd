@@ -1,10 +1,23 @@
 ---
 title: "Decouple the spatial and temporal components by PCA"
-author: "Takaaki Aoki"
-date: "2025-11-06"
-output: html_document
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Two-Stepreduction}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(HodgePotentialHumanFlow)
+```
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
@@ -185,7 +198,6 @@ ggplot(filtered_data, aes(PC1, PC3, color = as.numeric(hour))) + #PC2 flipped
             labs(x = "PC1", y = "PC3")
 
 ```
-
 
 
 
