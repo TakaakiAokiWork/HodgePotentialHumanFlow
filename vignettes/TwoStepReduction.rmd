@@ -1,0 +1,191 @@
+---
+title: "Decouple the spatial and temporal components by PCA"
+author: "Takaaki Aoki"
+date: "2025-11-06"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggplot2,quietly=T)
+library(scales)
+library(sf)
+library(ggspatial,quietly=T)
+library(viridis,quietly=T)
+library(colorspace)
+library(ggrepel)
+library(readr)
+library(dplyr)
+library(tidyr)
+library(broom)
+```
+
+# Aim
+This article explans the code for the subsequent principal component analysis (PCA), proposed in Two-step dimensionality reduction of human mobility data: From potential landscapes to spatiotemporal insights.
+
+
+## Read files of pontials into a single wide dataframe
+read each file and make a wide table
+```{r}
+file_paths = c(
+  "potential_2019_h.csv",
+  "potential_2019_w.csv",
+  "potential_2021_h.csv",
+  "potential_2021_w.csv")
+
+  preprocess <- function(file_path) {
+    #read the file
+    potential <- read_csv(file_path, col_types=list(zone="c", org_hour="i", dst_hour="i", .default="n"))
+    
+    #Add one column that is "weekday2019" or "weekday2021" or "weekday2021" or "holiday2021", depending on if "2019" or "2021" is in the file path, and if "weekday" or "holiday" is in the file path
+    potential$day_type <- case_when(
+    grepl("2019", file_path) & grepl("_w", file_path) ~ "2019w", 
+    grepl("2019", file_path) & grepl("_h", file_path) ~ "2019h", 
+    grepl("2021", file_path) & grepl("_w", file_path) ~ "2021w",  
+    grepl("2021", file_path) & grepl("_h", file_path) ~ "2021h",
+    )
+    
+    #combine day_type and org_hour into one column, like "weekday2019-01", with org_hour two digits
+    potential$org_hour = paste0(potential$day_type, "-", sprintf("%02d", potential$org_hour))
+    
+    #arange by org_hour, and select by zone, org_hour, potential
+    potential <- potential %>% arrange(org_hour) %>% select(zone, org_hour, potential)
+    
+    #make it a pivot table, where the columns are the zones, the rows are the org_hours, and the values are the potentials
+    df_wider <- potential %>% pivot_wider(names_from = zone, values_from = potential)
+    
+    #order by weekday2019-00 to weekday2019-23, then holiday2019-00 to holiday2019-23, then weekday2021-00 to weekday2021-23, then holiday2021-00 to holiday2021-23
+    df_wider$org_hour <- factor(df_wider$org_hour, levels = c(paste0("2019w-", sprintf("%02d", 0:23)), 
+                                                              paste0("2019h-", sprintf("%02d", 0:23)),
+                                                              paste0("2021w-", sprintf("%02d", 0:23)),
+                                                              paste0("2021h-", sprintf("%02d", 0:23))))
+    return(df_wider)
+  }
+
+# apply the function to all the files, and combine them into one dataframe
+df_wider_all <- map_dfr(file_paths, preprocess)
+head(df_wider_all)
+```
+
+# Make it into a matrix
+ 
+```{r}
+m = as.matrix(df_wider_all %>% select(-org_hour))
+```
+
+# Principle Component Analysis (PCA)
+```{r}
+result = prcomp(m, center=T, scale=F)
+```
+
+
+
+# Scree plot
+```{r}
+pcs = tidy(result, "pcs")
+top3 <- pcs %>% filter(PC %in% 1:3)
+ggplot(data = pcs, aes(x=PC, y=percent))+
+geom_col(fill="dodgerblue", alpha=0.7) + theme_minimal() +
+    scale_y_continuous(labels=scales::label_percent(), breaks = scales::breaks_pretty(n=6))+
+    labs(y= "Variance explained")+
+    geom_text(
+    data = top3,
+    aes(
+      x = PC,
+      y = percent,
+      label = paste0("PC", PC, ": ", scales::percent(percent))
+    ),
+    vjust = 0,
+    hjust = 0,
+    size = 4
+  )
+```
+
+# Save PCA rotation (basis)
+```{r}
+rotation_df <- as.data.frame(result$rotation)
+rotation_df$MESH2KM <- rownames(result$rotation)
+rotation_df = rotation_df %>% select(MESH2KM, PC1,PC2,PC3)
+write_csv(rotation_df, "tmp/prc_basis.csv")
+head(rotation_df)
+```
+
+# Plot temporal evolution of the PC1, PC2 and PC3
+
+```{r}
+augmented_data = augment(result, data = df_wider_all) 
+  
+# keep only the columns that start with a dot and also the org_hour column, rename the columns to remove the ".fitted" part
+augmented_data = augmented_data %>% select(starts_with("."), org_hour) %>% rename_all(~str_remove(., "\\.fitted"))
+# split the org_hour column into two columns, one for the day type and one for the hour
+augmented_data = augmented_data %>% separate(org_hour, c("day_type", "hour"), sep="-") %>% relocate(day_type, hour) %>% select(-.rownames)
+head(augmented_data)
+```
+
+pickup weekdau in 2019
+```{r}
+filtered_data <- augmented_data %>% filter(day_type == "2019w")
+head(filtered_data)
+```
+pc1 vs pc2
+```{r}
+ggplot(filtered_data, aes(PC1, -PC2, color = as.numeric(hour))) + #PC2 flipped
+            geom_path(aes(group = day_type), linewidth = 1) +  # Lines based on hour
+            geom_point(size = 4) +  # Points also based on hour
+            geom_text_repel(aes(label = hour), min.segment.length = 1, size = 5) +  # Point labels
+            scale_color_gradientn(
+                colors = c("black", "green", "red", "blue", "black"),  # Custom gradient from night to day
+                values = rescale(c(0, 6, 12, 18, 23)),  # Map 0-6 (night) and 18-24 (day) with corresponding colors
+                name = "Hour"
+            ) +  
+            theme_minimal() +
+            theme(legend.position = "bottom",  # Move legend to the right
+                legend.box = "horizontal",  # Ensure vertical arrangement of legend
+                legend.title = element_text(face = "bold", margin = margin(r = 50, b = 0)),
+                ) +  
+                guides(
+                    color = guide_colorbar(
+                    barwidth = 20, 
+                    barheight = 2,
+                    title.position = "left",  # Move the title to the left of the colorbar
+                    title.hjust = 0.5,  # Center the title vertically relative to the colorbar
+                    label.vjust = 0.5   # Vertically align the labels
+                    )
+                ) +
+            labs(x = "PC1", y = "PC2")
+
+```
+
+```{r}
+# pc1 vs pc3
+ggplot(filtered_data, aes(PC1, PC3, color = as.numeric(hour))) + #PC2 flipped
+            geom_path(aes(group = day_type), linewidth = 1) +  # Lines based on hour
+            geom_point(size = 4) +  # Points also based on hour
+            geom_text_repel(aes(label = hour), min.segment.length = 1, size = 5) +  # Point labels
+            scale_color_gradientn(
+                colors = c("black", "green", "red", "blue", "black"),  # Custom gradient from night to day
+                values = rescale(c(0, 6, 12, 18, 23)),  # Map 0-6 (night) and 18-24 (day) with corresponding colors
+                name = "Hour"
+            ) +  
+            theme_minimal() +
+            theme(legend.position = "bottom",  # Move legend to the right
+                legend.box = "horizontal",  # Ensure vertical arrangement of legend
+                legend.title = element_text(face = "bold", margin = margin(r = 50, b = 0)),
+                ) +  
+                guides(
+                    color = guide_colorbar(
+                    barwidth = 20, 
+                    barheight = 2,
+                    title.position = "left",  # Move the title to the left of the colorbar
+                    title.hjust = 0.5,  # Center the title vertically relative to the colorbar
+                    label.vjust = 0.5   # Vertically align the labels
+                    )
+                ) +
+            labs(x = "PC1", y = "PC3")
+
+```
+
+
+
+
