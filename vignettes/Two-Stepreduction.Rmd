@@ -2,7 +2,7 @@
 title: "Decouple the spatial and temporal components by PCA"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Two-Stepreduction}
+  %\VignetteIndexEntry{Decouple the spatial and temporal components by PCA}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -15,16 +15,11 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
-library(HodgePotentialHumanFlow)
-```
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(ggplot2,quietly=T)
 library(scales)
-library(sf)
-library(ggspatial,quietly=T)
 library(viridis,quietly=T)
 library(colorspace)
 library(ggrepel)
@@ -120,7 +115,7 @@ geom_col(fill="dodgerblue", alpha=0.7) + theme_minimal() +
 rotation_df <- as.data.frame(result$rotation)
 rotation_df$MESH2KM <- rownames(result$rotation)
 rotation_df = rotation_df %>% select(MESH2KM, PC1,PC2,PC3)
-write_csv(rotation_df, "tmp/prc_basis.csv")
+#write_csv(rotation_df, "tmp/prc_basis.csv")
 head(rotation_df)
 ```
 
